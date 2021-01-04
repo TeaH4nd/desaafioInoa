@@ -7,12 +7,20 @@
     {% if api == 200 %}
         Something went wrong with the api querry
     {% else %}
-
-        <h1>{{ api.company_name }}</h1>
-        Preço: ${{ api.price }}<br/>
-        Variação: {{ api.change_percent }}%<br/>
-        Valor de Mercado: ${{ api.market_cap }}M<br/>
-
+        <div class="row justify-content-center">
+            <div class="col-sm-12">
+                <img src={{ api.logo_url }} alt="Sorry! Image not available at this time">
+            </div>
+            <div class="col-sm-12 col align-self-center">
+                <h1>{{ api.longName }}</h1>
+                <h5>{{ api.symbol }}</h5>
+                Preço: R$ {{ api.open }}<br/>
+                Alta: R$ {{ api.dayHigh }}<br/>
+                Baixa: R$ {{ api.dayLow }}<br/>
+                Fech. ant.: R$ {{ api.previousClose }}<br/>
+                Cap. merc.: R$ {{ api.marketCap }}<br/>
+            </div>
+        </div>
     {% endif %}
 {% endif %}
 
