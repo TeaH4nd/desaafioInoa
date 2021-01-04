@@ -1,1 +1,20 @@
-<h1>Teste</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<br/>
+<br/>
+{% if api %}
+    {% if api == 200 %}
+        Something went wrong with the api querry
+    {% else %}
+
+        <h1>{{ api.company_name }}</h1>
+        Preço: ${{ api.price }}<br/>
+        Variação: {{ api.change_percent }}%<br/>
+        Valor de Mercado: ${{ api.market_cap }}M<br/>
+
+    {% endif %}
+{% endif %}
+
+
+{% endblock %}
