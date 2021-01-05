@@ -33,22 +33,24 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for item in simbolo %}
+        {% load humanize %}
+		{% for item in lista %}
 		<tr>
-			<th><a href="{% url 'delete' item.id %}" type="button" class="btn btn-outline-danger btn-sm">Delete</a></th>
-			<td scope="row">{{ item }}</td>
-			<td>Mark</td>
-			<td>Otto</td>
-			<td>@mdo</td>
-			<td>@mdo</td>
-			<td>@mdo</td>
-			<td>@mdo</td>
+			<th>
+				<a href="{% url 'delete' item.id %}" type="button" class="btn btn-outline-danger btn-sm"
+					>Delete</a>
+			</th>
+			<td scope="row">{{ item.longName }}</td>
+			<td>{{ item.symbol }}</td>
+			<td>R$ {{ item.regularMarketPrice }}</td>
+			<td>R$ {{ item.dayHigh }}</td>
+			<td>R$ {{ item.dayLow }}</td>
+			<td>R$ {{ item.previousClose }}</td>
+			<td>R$ {{ item.marketCap|intword }}</td>
 		</tr>
 
 		{% endfor %}
 	</tbody>
 </table>
 
-{% for item in simbolo %} {{ item }} |
-<a href="{% url 'delete' item.id %}">Delete</a>{{ item.id }}<br />
-{% endfor %} {% endblock %}
+{% endblock %}

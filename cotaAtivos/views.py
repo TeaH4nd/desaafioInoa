@@ -14,8 +14,6 @@ def home(request):
     if request.method == 'POST':
         simbolo = request.POST['simbolo']
 
-        
-        
         #api_request = requests.get("https://api.hgbrasil.com/finance/stock_price?key=a5508924&symbol={}".format(simbolo))
 
         try:
@@ -41,7 +39,17 @@ def portifolio(request):
             return redirect('portifolio')
     else:    
         simbolo = Acao.objects.all()
-        return render(request, 'portifolio.html', {'simbolo':simbolo})
+        acoes = []
+        for item in simbolo:
+            #print(item.id)
+            try:
+                api_request = yf.Ticker(str(item))
+                api_request.info["id"] = item.id
+                acoes.append(api_request.info)
+            except Exception as e:
+                api_request = 200
+
+        return render(request, 'portifolio.html', {'simbolo':simbolo, 'lista':acoes})
 
 def delete(request, acao_id):
     item = Acao.objects.get(pk=acao_id)
