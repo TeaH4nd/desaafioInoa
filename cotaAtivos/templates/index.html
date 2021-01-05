@@ -1,0 +1,32 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="row justify-content-center">
+	<h1>Bem vindo a seu Portifólio de Ações</h1>
+	<br />
+	<div class="flex-container">
+		<div class="col-6">
+			<p>
+				Caso queira adicionar uma nova ação para ser registrada digite o
+				simbolo aqui ou a qualquer momento na barra de pesquisa
+			</p>
+			<form action="{% url 'home' %}" class="d-flex" method="POST">
+				{% csrf_token %}
+				<input
+					class="form-control me-2"
+					type="search"
+					placeholder="Digite uma ação"
+					aria-label="Search"
+					name="simbolo"
+				/>
+				<button class="btn btn-outline-success" type="submit">
+					Pesquisar
+				</button>
+			</form>
+		</div>
+		<div class="col-6">
+			<p>Caso queira visualizar suas ações ja registradas clique aqui</p>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

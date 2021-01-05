@@ -1,0 +1,54 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Portifolio</h1>
+
+<form
+	action="{% url 'portifolio' %}"
+	class="form-inline my-2 my-lg-0"
+	method="POST"
+>
+	{% csrf_token %}
+	<input
+		class="form-control mr-sm-2"
+		type="search"
+		placeholder="Digite uma ação"
+		aria-label="Search"
+		name="simbolo"
+	/>
+	<button class="btn btn-outline-success" type="submit">Adicionar</button>
+</form>
+<br />
+
+<table class="table table-striped table-bordered table-hover">
+	<thead class="table-dark">
+		<tr>
+			<th scope="col">Deletar</th>
+			<th scope="col">Nome</th>
+			<th scope="col">Simbolo</th>
+			<th scope="col">Preço</th>
+			<th scope="col">Alta</th>
+			<th scope="col">Baixa</th>
+			<th scope="col">Fech. ant.</th>
+			<th scope="col">Cap. merc.</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in simbolo %}
+		<tr>
+			<th><a href="{% url 'delete' item.id %}" type="button" class="btn btn-outline-danger btn-sm">Delete</a></th>
+			<td scope="row">{{ item }}</td>
+			<td>Mark</td>
+			<td>Otto</td>
+			<td>@mdo</td>
+			<td>@mdo</td>
+			<td>@mdo</td>
+			<td>@mdo</td>
+		</tr>
+
+		{% endfor %}
+	</tbody>
+</table>
+
+{% for item in simbolo %} {{ item }} |
+<a href="{% url 'delete' item.id %}">Delete</a>{{ item.id }}<br />
+{% endfor %} {% endblock %}
