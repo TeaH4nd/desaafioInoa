@@ -29,16 +29,20 @@
 			<th scope="col">Alta</th>
 			<th scope="col">Baixa</th>
 			<th scope="col">Fech. ant.</th>
-			<th scope="col">Cap. merc.</th>
+            <th scope="col">Cap. merc.</th>
+            <th scope="col">Ultima att.</th>
 		</tr>
 	</thead>
 	<tbody>
-        {% load humanize %}
-		{% for item in lista %}
+		{% load humanize %} {% for item in lista %}
 		<tr>
 			<th>
-				<a href="{% url 'delete' item.id %}" type="button" class="btn btn-outline-danger btn-sm"
-					>Delete</a>
+				<a
+					href="{% url 'delete' item.id %}"
+					type="button"
+					class="btn btn-outline-danger btn-sm"
+					>Delete</a
+				>
 			</th>
 			<td scope="row">{{ item.longName }}</td>
 			<td>{{ item.symbol }}</td>
@@ -46,11 +50,15 @@
 			<td>R$ {{ item.dayHigh }}</td>
 			<td>R$ {{ item.dayLow }}</td>
 			<td>R$ {{ item.previousClose }}</td>
-			<td>R$ {{ item.marketCap|intword }}</td>
+            <td>R$ {{ item.marketCap|intword }}</td>
+            <td>{{ item.data|naturaltime }}</td>
 		</tr>
 
 		{% endfor %}
 	</tbody>
 </table>
+
+<a href="{% url 'atualizar' %}" type="button" class="btn btn-success"
+	>Atualizar</a>
 
 {% endblock %}

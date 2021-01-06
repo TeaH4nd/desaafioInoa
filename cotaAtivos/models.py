@@ -8,6 +8,18 @@ class Acao(models.Model):
 
 class Preco(models.Model):
     simbolo = models.ForeignKey(Acao, on_delete=models.CASCADE)
-    preço = models.FloatField()
+    preco = models.FloatField()
     data = models.DateField(auto_now_add=True)
+
+class Salvo(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    nome = models.CharField(max_length=100)
+    simbolo = models.CharField(max_length=10)
+    preco = models.FloatField()
+    alta = models.FloatField()
+    baixa = models.FloatField()
+    fechAnt = models.FloatField()
+    capMerc = models.FloatField()
+    data = models.DateTimeField(auto_now_add=True)
+
 

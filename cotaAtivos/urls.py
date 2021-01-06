@@ -5,5 +5,6 @@ urlpatterns = [
     path('', views.index, name="index"),
     path('home.html', views.home, name="home"),
     path('portifolio.html', views.portifolio, name="portifolio"),
-    path('delete/<acao_id>', views.delete, name="delete")
+    path('delete/<acao_id>', views.delete, name="delete"),
+    path('atualizar', views.atualizar, name="atualizar"),
 ]
