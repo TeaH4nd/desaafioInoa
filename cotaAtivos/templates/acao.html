@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %}
+
+<br />
+<h1>{{ acao }}</h1>
+<br />
+
+<table class="table table-striped table-bordered table-hover">
+	<thead class="table-dark">
+		<tr>
+			<th scope="col">Preço</th>
+			<th scope="col">Data</th>
+		</tr>
+	</thead>
+	<tbody>
+        {% load humanize %} {% for item in lista %}
+        
+		<tr>
+			<td scope="row">{{ item.preco }}</td>
+			<td>{{ item.data }}</td>
+		</tr>
+
+		{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

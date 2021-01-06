@@ -9,7 +9,7 @@ class Acao(models.Model):
 class Preco(models.Model):
     simbolo = models.ForeignKey(Acao, on_delete=models.CASCADE)
     preco = models.FloatField()
-    data = models.DateField(auto_now_add=True)
+    data = models.DateTimeField(auto_now_add=True)
 
 class Salvo(models.Model):
     id = models.PositiveIntegerField(primary_key=True)

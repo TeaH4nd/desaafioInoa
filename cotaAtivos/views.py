@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+
 from .forms import AcaoForm
+from .models import Acao, Preco, Salvo
+
 import yfinance as yf
-from .models import Acao, Salvo
+
 
 def index(request):
+    get_precos()
+    #p = Preco.objects.all()
+    #print(p)
     return render(request, 'index.html', {})
 
 def home(request):
@@ -100,3 +106,29 @@ def atualizar(request):
         
     #print(Salvo.objects.all())
     return render(request, 'portifolio.html', {'lista':acoes})
+
+def acao(request, acao_id):
+    precos = Preco.objects.filter(simbolo=acao_id).order_by('-data')
+    acao = Salvo.objects.get(pk=acao_id)
+    nome = getattr(acao, "nome")
+    listPrecos = []
+    for preco in precos:
+        dictPreco = {}
+        dictPreco["preco"] = getattr(preco, "preco")
+        dictPreco["data"] = getattr(preco, "data")
+        listPrecos.append(dictPreco)
+    return render(request, 'acao.html', {'lista':listPrecos, "acao":nome})
+
+
+def get_precos():
+    acoes = Acao.objects.all()
+    for acao in acoes:
+        try:
+            api_request = yf.Ticker(str(acao))
+            print(api_request.info["regularMarketPrice"])
+            p = acao.preco_set.create(preco = api_request.info["regularMarketPrice"])
+            print("1")  
+            p.save()
+            print("3") 
+        except Exception as e:
+            pass

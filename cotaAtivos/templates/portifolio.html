@@ -30,7 +30,8 @@
 			<th scope="col">Baixa</th>
 			<th scope="col">Fech. ant.</th>
             <th scope="col">Cap. merc.</th>
-            <th scope="col">Ultima att.</th>
+			<th scope="col">Ultima att.</th>
+			<th scope="col"></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -51,7 +52,13 @@
 			<td>R$ {{ item.dayLow }}</td>
 			<td>R$ {{ item.previousClose }}</td>
             <td>R$ {{ item.marketCap|intword }}</td>
-            <td>{{ item.data|naturaltime }}</td>
+			<td>{{ item.data|naturaltime }}</td>
+			<td><a
+				href="{% url 'acao' item.id %}"
+				type="button"
+				class="btn btn-primary btn-sm"
+				>Visualizar</a
+			></td>
 		</tr>
 
 		{% endfor %}
