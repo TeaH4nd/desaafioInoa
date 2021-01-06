@@ -1,25 +1,29 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+{% block content %}
+
 <br />
 <br />
-{% if api %} {% if api == 200 %} Something went wrong with the api querry {%
-else %}
-<div class="row justify-content-center">
-	<div class="col-sm-12">
-		<img
-			src="{{"
-			api.logo_url
-			}}
-			alt="Sorry! Image not available at this time"
-		/>
-	</div>
-	<div class="col-sm-12 col align-self-center">
-		<h1>{{ api.longName }}</h1>
-		<h5>{{ api.symbol }}</h5>
-		Preço: R$ {{ api.regularMarketPrice }}<br />
-		Alta: R$ {{ api.dayHigh }}<br />
-		Baixa: R$ {{ api.dayLow }}<br />
-		Fech. ant.: R$ {{ api.previousClose }}<br />
-		Cap. merc.: R$ {{ api.marketCap }}<br />
-	</div>
-</div>
-{% endif %} {% endif %} {% endblock %}
+{% if api %} 
+    {% if api == 200 %} Something went wrong with the api querry 
+    {%else %}
+        <div class="row justify-content-center">
+            <div class="col-sm-12">
+                <img
+                    src="{{ api.logo_url }}"
+                    alt="Sorry! Image not available at this time"
+                />
+            </div>
+            <div class="col-sm-12 col align-self-center">
+                <h1>{{ api.longName }}</h1>
+                <h5>{{ api.symbol }}</h5>
+                Preço: R$ {{ api.regularMarketPrice }}<br />
+                Alta: R$ {{ api.dayHigh }}<br />
+                Baixa: R$ {{ api.dayLow }}<br />
+                Fech. ant.: R$ {{ api.previousClose }}<br />
+                Cap. merc.: R$ {{ api.marketCap }}<br />
+            </div>
+        </div>
+    {% endif %} 
+{% endif %} 
+
+{% endblock %}

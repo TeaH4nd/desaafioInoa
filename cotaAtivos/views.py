@@ -13,11 +13,12 @@ def home(request):
 
     if request.method == 'POST':
         simbolo = request.POST['simbolo']
-
+        #print(simbolo)
         #api_request = requests.get("https://api.hgbrasil.com/finance/stock_price?key=a5508924&symbol={}".format(simbolo))
 
         try:
             api_request = yf.Ticker(simbolo)
+            #print(api_request)
         except Exception as e:
             api_request = 200
 
@@ -59,7 +60,8 @@ def portifolio(request):
             dictAcoes["marketCap"] = getattr(item, "capMerc")
             dictAcoes["longName"] = getattr(item, "nome")
             dictAcoes["data"] = getattr(item, "data")
-            print(getattr(item, "data"))
+            #print(getattr(item, "data"))
+
             listAcoes.append(dictAcoes)
         return render(request, 'portifolio.html', {'lista':listAcoes})
 
@@ -93,6 +95,7 @@ def atualizar(request):
         s.fechAnt = item["previousClose"]
         s.capMerc = item["marketCap"]
         #print(item["longName"])
+
         s.save()
         
     #print(Salvo.objects.all())
