@@ -15,7 +15,7 @@
         {% load humanize %} {% for item in lista %}
         
 		<tr>
-			<td scope="row">{{ item.preco }}</td>
+			<td scope="row">{{ item.preco|floatformat:"2"|intcomma }}</td>
 			<td>{{ item.data }}</td>
 		</tr>
 

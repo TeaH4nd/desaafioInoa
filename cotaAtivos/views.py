@@ -5,12 +5,14 @@ from .forms import AcaoForm
 from .models import Acao, Preco, Salvo
 
 import yfinance as yf
+from yahoo_fin.stock_info import get_quote_table
+from background_task import background
 
+import os
+
+REPEAT_TIME = 60
 
 def index(request):
-    get_precos()
-    #p = Preco.objects.all()
-    #print(p)
     return render(request, 'index.html', {})
 
 def home(request):
@@ -43,9 +45,9 @@ def portifolio(request):
         try:
             api_request = yf.Ticker(simbolo)
         except Exception as e:
-            api_request = 200
+            api_request = 500
 
-        if (form.is_valid()) and (api_request != 200):
+        if (form.is_valid()) and (api_request != 500):
             form.save()
             messages.success(request, ("Adicionado com Sucesso!"))
             return redirect('portifolio')
@@ -119,16 +121,21 @@ def acao(request, acao_id):
         listPrecos.append(dictPreco)
     return render(request, 'acao.html', {'lista':listPrecos, "acao":nome})
 
-
+@background(schedule=5)
 def get_precos():
     acoes = Acao.objects.all()
     for acao in acoes:
         try:
-            api_request = yf.Ticker(str(acao))
-            print(api_request.info["regularMarketPrice"])
-            p = acao.preco_set.create(preco = api_request.info["regularMarketPrice"])
-            print("1")  
+            print(str(acao))
+            preco = get_quote_table(str(acao))
+            #print(api_request.info["regularMarketPrice"])
+            p = acao.preco_set.create(preco = preco["Quote Price"])
             p.save()
-            print("3") 
         except Exception as e:
+            #print("Error")
             pass
+
+def start_get_precos(request):
+    get_precos(repeat= 60)
+    os.system('python manage.py process_tasks')
+    return redirect('portifolio')
