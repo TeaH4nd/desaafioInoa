@@ -22,4 +22,5 @@ class Salvo(models.Model):
     capMerc = models.FloatField()
     data = models.DateTimeField(auto_now_add=True)
 
-
+class Email(models.Model):
+    email = models.CharField(max_length=100, unique=True)

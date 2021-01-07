@@ -1,0 +1,89 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Perfil</h1>
+<br />
+
+<div class="row align-items-start">
+	<div class="col-4">
+		<form
+			action="{% url 'perfil' %}"
+			class="row row-cols-lg-auto g-3 align-items-center"
+			method="POST"
+		>
+			{% csrf_token %}
+			<div class="col-12">
+				<label
+					class="visually-hidden"
+					for="inlineFormInputGroupUsername"
+					>Email</label
+				>
+				<div class="input-group">
+					<input
+						class="form-control mr-sm-2"
+						type="search"
+						placeholder="Digite seu Email"
+						aria-label="Search"
+						name="email"
+					/>
+				</div>
+			</div>
+			<div class="col-12">
+				<button class="btn btn-outline-success" type="submit">
+					Adicionar
+				</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-4">
+		<table class="table table-striped table-bordered table-hover">
+			<thead class="table-dark">
+				<tr>
+					<th scope="col">Email</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% load humanize %} {% for item in lista %}
+				<tr>
+					<td scope="row">{{ item }}</td>
+				</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="row align-items-center">
+	<div class="col-8">
+		<form
+			action="{% url 'start' %}"
+			class="row row-cols-lg-auto g-3 align-items-center"
+			method="POST"
+		>
+			{% csrf_token %}
+			<div class="col-12">
+				<div class="input-group">
+					<input
+						class="form-control mr-sm-2"
+						type="search"
+						placeholder="Digite o periodo de repetição"
+						aria-label="Search"
+						name="numero"
+					/>
+				</div>
+			</div>
+			<div class="col-12">
+				<select class="form-select" id="inlineFormSelectPref" name="tempo">
+					<option selected value="1">Segundo(s)</option>
+					<option value="2">Minuto(s)</option>
+					<option value="3">Hora(s)</option>
+				</select>
+			</div>
+			<div class="col-12">
+				<button class="btn btn-outline-success" type="submit">
+					Adicionar
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .forms import AcaoForm
-from .models import Acao, Preco, Salvo
+from .forms import AcaoForm, EmailForm, TempoForm
+from .models import Acao, Preco, Salvo, Email
 
 import yfinance as yf
 from yahoo_fin.stock_info import get_quote_table
 from background_task import background
+from background_task.models import CompletedTask, Task
 
 import os
 
@@ -23,7 +24,6 @@ def home(request):
         simbolo = request.POST['simbolo']
         #print(simbolo)
         #api_request = requests.get("https://api.hgbrasil.com/finance/stock_price?key=a5508924&symbol={}".format(simbolo))
-
         try:
             api_request = yf.Ticker(simbolo)
             #print(api_request)
@@ -121,6 +121,24 @@ def acao(request, acao_id):
         listPrecos.append(dictPreco)
     return render(request, 'acao.html', {'lista':listPrecos, "acao":nome})
 
+def perfil(request):
+    if request.method == 'POST':
+        form = EmailForm(request.POST or None)
+        if (form.is_valid()):
+            form.save()
+            messages.success(request, ("Adicionado com Sucesso!"))
+            return redirect('perfil')
+        else:
+            messages.error(request, ("Houve um erro ao adicionar o email. O email ja esta adicionado?"))
+            return redirect('perfil')
+    else:
+        e = Email.objects.all()
+        email = []
+        for item in e:
+            email.append(getattr(item, "email"))
+        return render(request, 'perfil.html', {"lista":email})
+
+
 @background(schedule=5)
 def get_precos():
     acoes = Acao.objects.all()
@@ -136,6 +154,40 @@ def get_precos():
             pass
 
 def start_get_precos(request):
-    get_precos(repeat= 60)
-    os.system('python manage.py process_tasks')
-    return redirect('portifolio')
+    if request.method == 'POST':
+        form = TempoForm(request.POST or None)
+        if (form.is_valid()):
+            numero = form.cleaned_data['numero']
+            tempo = form.cleaned_data['tempo']
+            if tempo == 1:
+                try:
+                    CompletedTask.objects.all().delete()
+                    Task.objects.all().delete()
+                    get_precos(repeat= (numero))
+                    os.system('python manage.py process_tasks')
+                    return redirect('perfil')
+                except Exception as e:
+                    return redirect('perfil')
+            elif tempo == 2:
+                try:
+                    CompletedTask.objects.all().delete()
+                    Task.objects.all().delete()
+                    get_precos(repeat= (numero*60))
+                    os.system('python manage.py process_tasks')
+                    return redirect('perfil')
+                except Exception as e:
+                    return redirect('perfil')
+            elif tempo == 3:
+                try:
+                    CompletedTask.objects.all().delete()
+                    Task.objects.all().delete()
+                    get_precos(repeat= (numero*60*60))
+                    os.system('python manage.py process_tasks')
+                    return redirect('perfil')
+                except Exception as e:
+                    return redirect('perfil')
+        else:
+            messages.error(request, ("Houve um erro ao iniciar o Script"))
+            return redirect('perfil')
+    else:
+        return redirect('perfil')
