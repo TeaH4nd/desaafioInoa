@@ -58,55 +58,26 @@
 <br/>
 <h5>Limites</h5>
 
-<div class="row align-items-start">
-	<div class="col-4">
-		<form
-			action="{% url 'perfil' %}"
-			class="row row-cols-lg-auto g-3 align-items-center"
-			method="POST"
-		>
-			{% csrf_token %}
-			<div class="col-12">
-				<div class="input-group">
-					<input
-						class="form-control mr-sm-2"
-						type="search"
-						placeholder="Digite o limite inferior"
-						aria-label="Search"
-						name="limInf"
-                    />
-                    <input
-                    class="form-control mr-sm-2"
-                    type="search"
-                    placeholder="Digite o limite superior"
-                    aria-label="Search"
-                    name="limSup"
-                />
-				</div>
-			</div>
-			<div class="col-12">
-				<button class="btn btn-outline-success" type="submit">
-					Adicionar
-				</button>
-			</div>
-		</form>
-	</div>
+<div class="row align-items-center">
 	<div class="col-4">
 		<table class="table table-striped table-bordered table-hover">
 			<thead class="table-dark">
 				<tr>
+					<th scope="col">Simbolo</th>
                     <th scope="col">Limite Inferior</th>
                     <th scope="col">Limite Superior</th>
 				</tr>
 			</thead>
 			<tbody>
                 {% if limite %}
-				{% load humanize %} 
+				{% load humanize %}
+				{% for item in limite %} 
                 <tr>
-                    <td scope="row">{{limite.limInf}}</td>
-                    <td scope="row">{{limite.limSup}}</td>
+                    <td scope="row">{{item.simbolo}}</td>
+                    <td scope="row">{{item.limInf}}</td>
+                    <td scope="row">{{item.limSup}}</td>
                 </tr>
-
+				{% endfor %}
                 {% else %}
 				<tr>
 					<td scope="row">LimInf</td>

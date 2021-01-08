@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 from .forms import AcaoForm, EmailForm, TempoForm, LimiteForm
-from .models import Acao, Preco, Salvo, Perfil, TaskTime
+from .models import Acao, Preco, Salvo, Email, Perfil, TaskTime
 from .tasks import get_precos
 
 import yfinance as yf
 from yahoo_fin.stock_info import get_quote_table
 from background_task.models import CompletedTask, Task
+
+from django.core.mail import send_mail
+from desafioInoa.settings import EMAIL_HOST_USER
 
 
 def index(request):
@@ -117,16 +120,47 @@ def atualizar(request):
     return render(request, 'portifolio.html', {'lista':acoes})
 
 def acao(request, acao_id):
-    precos = Preco.objects.filter(simbolo=acao_id).order_by('-data')
-    acao = Salvo.objects.get(pk=acao_id)
-    nome = getattr(acao, "nome")
-    listPrecos = []
-    for preco in precos:
-        dictPreco = {}
-        dictPreco["preco"] = getattr(preco, "preco")
-        dictPreco["data"] = getattr(preco, "data")
-        listPrecos.append(dictPreco)
-    return render(request, 'acao.html', {'lista':listPrecos, "acao":nome})
+    if request.method == 'POST':
+        form = LimiteForm(request.POST or None)
+        #print(form)
+        if (form.is_valid()):
+            try:
+                p = Perfil.objects.get(pk=acao_id)
+                print(p)
+                l = form.save(commit=False)
+                p.limSup = l.limSup
+                p.limInf = l.limInf
+                p.save()
+                messages.success(request, ("Limites atualizados com Sucesso!"))
+                return redirect('acao', acao_id)
+            except Exception as e:
+                acao = Acao.objects.get(pk=acao_id)
+                print(acao)
+                l = form.save(commit=False)
+                acao.perfil_set.create(id = acao_id, limSup = l.limSup, limInf = l.limInf)
+                messages.success(request, ("Limites criados com Sucesso!"))
+                return redirect('acao', acao_id)
+        else:
+            messages.error(request, ("Houve um erro ao adicionar os limites."))
+            return redirect('acao', acao_id)
+    else:
+        precos = Preco.objects.filter(simbolo=acao_id).order_by('-data')
+        acao = Salvo.objects.get(pk=acao_id)
+        try:
+            limites = Perfil.objects.get(pk=acao_id)
+            lim = {}
+            lim["limInf"] = getattr(limites, "limInf")
+            lim["limSup"] = getattr(limites, "limSup")
+        except Exception as e:
+            lim = {}
+        nome = getattr(acao, "nome")
+        listPrecos = []
+        for preco in precos:
+            dictPreco = {}
+            dictPreco["preco"] = getattr(preco, "preco")
+            dictPreco["data"] = getattr(preco, "data")
+            listPrecos.append(dictPreco)
+        return render(request, 'acao.html', {'lista':listPrecos, "acao":nome, "acao_id":acao_id, "limites":lim})
 
 def perfil(request):
     if request.method == 'POST':
@@ -139,28 +173,20 @@ def perfil(request):
             else:
                 messages.error(request, ("Houve um erro ao adicionar o email. O email ja esta adicionado?"))
                 return redirect('perfil')
-        if "limInf" in request.POST:
-            form = LimiteForm(request.POST or None)
-            if (form.is_valid()):
-                p = Perfil.objects.all()
-                for item in p:
-                    lim = form.save(commit=False)
-                    setattr(item, "limInf", lim.limInf)
-                    setattr(item, "limSup", lim.limSup)
-                    item.save()
-                messages.success(request, ("Limites adicionados com Sucesso!"))
-                return redirect('perfil')
-            else:
-                messages.error(request, ("Houve um erro ao adicionar os limites."))
-                return redirect('perfil')                
+                   
     else:
-        e = Perfil.objects.all()
+        p = Perfil.objects.all()
+        e = Email.objects.all()
         email = []
-        limites = {}
         for item in e:
             email.append(getattr(item, "email"))
-            limites["limInf"] = getattr(item, "limInf")
-            limites["limSup"] = getattr(item, "limSup")
+        limites = []
+        for item in p:
+            limite = {}
+            limite["simbolo"] = getattr(item, "simbolo")
+            limite["limInf"] = getattr(item, "limInf")
+            limite["limSup"] = getattr(item, "limSup")
+            limites.append(limite)
         task = TaskTime.objects.all()
         if task:
             for item in task:
@@ -220,3 +246,12 @@ def stop_get_precos(request):
     Task.objects.all().delete()
     TaskTime.objects.all().delete()
     return redirect('perfil')
+
+
+def email(request):
+    e = Email.objects.all()
+    for email in e:
+        print("mandando email")
+        mail_to = str(getattr(email, "email"))
+        send_mail('assunto', 'msg', EMAIL_HOST_USER, [mail_to], fail_silently=False)
+        print("enviado email")

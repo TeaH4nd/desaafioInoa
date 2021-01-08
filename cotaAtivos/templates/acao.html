@@ -4,6 +4,66 @@
 <h1>{{ acao }}</h1>
 <br />
 
+<div class="row align-items-start">
+	<div class="col-4">
+		<form
+			action="{% url 'acao' acao_id%}"
+			class="row row-cols-lg-auto g-3 align-items-center"
+			method="POST"
+		>
+			{% csrf_token %}
+			<div class="col-12">
+				<div class="input-group">
+					<input
+						class="form-control mr-sm-2"
+						type="search"
+						placeholder="Digite o limite inferior"
+						aria-label="Search"
+						name="limInf"
+                    />
+                    <input
+						class="form-control mr-sm-2"
+						type="search"
+						placeholder="Digite o limite superior"
+						aria-label="Search"
+						name="limSup"
+                	/>
+				</div>
+			</div>
+			<div class="col-12">
+				<button class="btn btn-outline-success" type="submit">
+					Adicionar
+				</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-4">
+		<table class="table table-striped table-bordered table-hover">
+			<thead class="table-dark">
+				<tr>
+                    <th scope="col">Limite Inferior</th>
+                    <th scope="col">Limite Superior</th>
+				</tr>
+			</thead>
+			<tbody>
+                {% if limites %}
+				{% load humanize %} 
+                <tr>
+                    <td scope="row">{{limites.limInf}}</td>
+                    <td scope="row">{{limites.limSup}}</td>
+                </tr>
+
+                {% else %}
+				<tr>
+					<td scope="row">LimInf</td>
+					<td scope="row">LimSup</td>
+				</tr>
+                {% endif %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
 <table id="myTable" class="table table-striped table-bordered table-hover">
 	<thead class="table-dark">
 		<tr>

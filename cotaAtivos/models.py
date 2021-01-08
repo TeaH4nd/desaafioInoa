@@ -22,8 +22,13 @@ class Salvo(models.Model):
     capMerc = models.FloatField()
     data = models.DateTimeField(auto_now_add=True)
 
-class Perfil(models.Model):
+class Email(models.Model):
     email = models.CharField(max_length=100, unique=True)
+
+
+class Perfil(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    simbolo = models.ForeignKey(Acao, on_delete=models.CASCADE)
     limSup = models.FloatField(blank=True, null=True)
     limInf = models.FloatField(blank=True, null=True)
 

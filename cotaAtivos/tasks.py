@@ -1,7 +1,8 @@
-from .models import Acao, Preco, Perfil
+from .models import Acao, Preco, Email, Perfil
 from yahoo_fin.stock_info import get_quote_table
 from background_task import background
 from django.core.mail import send_mail
+from desafioInoa.settings import EMAIL_HOST_USER
 
 @background(schedule=5)
 def get_precos():
@@ -10,39 +11,49 @@ def get_precos():
         try:
             print(str(acao))
             preco = get_quote_table(str(acao))
-            #print(api_request.info["regularMarketPrice"])
+            #print(preco)
             p = acao.preco_set.create(preco = preco["Quote Price"])
             p.save()
-            l = Perfil.objects.all()
-            for limite in l:
-                lSup = getattr(limite, "limSup")
-                lInf = getattr(limite, "limInf")
-                if preco >= lSup:
-                    manda_email("sup", str(acao), lSup, preco)
-                if preco <= lInf:
-                    manda_email("inf", str(acao), lInf, preco)
+            #print("limites")
+            limite = Perfil.objects.get(pk=acao.id)
+            #print(getattr(limite, "limInf"))
+            lSup = float(getattr(limite, "limSup"))
+            lInf = float(getattr(limite, "limInf"))
+            print(str(lInf) + ' \ ' + str(lSup))
+            if float(preco["Quote Price"]) >= float(lSup):
+                manda_email("sup", str(acao), lSup, preco["Quote Price"])
+            if float(preco["Quote Price"]) <= float(lInf):
+                manda_email("inf", str(acao), lInf, preco["Quote Price"])
         except Exception as e:
-            #print("Error")
+            print("Error")
             pass
 
 
 def manda_email(limite, nome, valor, preco):
-    e = Perfil.objects.all()
+    e = Email.objects.all()
     for email in e:
+        print("mandando email")
         mail_to = getattr(email, "email")
         if limite == "sup":
+            assunto = 'Venda a sua acao ' + nome
+            msg = 'Sua ação ' + nome + ' ultrapassou o limite estabelecido de venda de: ' + valor + '. No momento desse email ela vale: ' + preco
             send_mail(
-            'Venda a sua acao ' + nome,
-            'Sua ação ' + nome + ' ultrapassou o limite estabelecido de venda de: ' + valor + '. No momento desse email ela vale: ' + preco,
-            '',
+            assunto,
+            msg,
+            EMAIL_HOST_USER,
             [mail_to],
-            fail_silently=False,
+            fail_silently=False
             )
+            print("mandei email sup")
+
         if limite == "inf":
+            assunto = 'Compre acao ' + nome
+            msg = 'A acao ' + nome + 'ultrapassou o limite estabelecido de compra de: ' + valor + '. No momento desse email ela vale: ' + preco
             send_mail(
-            'Compre acao ' + nome,
-            'A acao ' + nome + 'ultrapassou o limite estabelecido de compra de: ' + valor + '. No momento desse email ela vale: ' + preco,
-            '',
+            assunto,
+            msg,
+            EMAIL_HOST_USER,
             [mail_to],
-            fail_silently=False,
+            fail_silently=False
             )
+            print("mandei email sup")

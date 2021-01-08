@@ -1,5 +1,5 @@
 from django import forms
-from .models import Acao, Perfil
+from .models import Acao, Email, Perfil
 
 class AcaoForm(forms.ModelForm):
     class Meta:
@@ -8,7 +8,7 @@ class AcaoForm(forms.ModelForm):
 
 class EmailForm(forms.ModelForm):
     class Meta:
-        model = Perfil
+        model = Email
         fields = ["email"]
 
 class LimiteForm(forms.ModelForm):
