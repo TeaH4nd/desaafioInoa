@@ -1,17 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .forms import AcaoForm, EmailForm, TempoForm
-from .models import Acao, Preco, Salvo, Email
+from .forms import AcaoForm, EmailForm, TempoForm, LimiteForm
+from .models import Acao, Preco, Salvo, Perfil, TaskTime
+from .tasks import get_precos
 
 import yfinance as yf
 from yahoo_fin.stock_info import get_quote_table
-from background_task import background
 from background_task.models import CompletedTask, Task
 
-import os
-
-REPEAT_TIME = 60
 
 def index(request):
     return render(request, 'index.html', {})
@@ -22,10 +19,11 @@ def home(request):
 
     if request.method == 'POST':
         simbolo = request.POST['simbolo']
+        simbolo = simbolo + ".sa"
         #print(simbolo)
         #api_request = requests.get("https://api.hgbrasil.com/finance/stock_price?key=a5508924&symbol={}".format(simbolo))
         try:
-            api_request = yf.Ticker(simbolo)
+            api_request = yf.Ticker(str(simbolo))
             #print(api_request)
         except Exception as e:
             api_request = 200
@@ -38,22 +36,29 @@ def home(request):
 
 def portifolio(request):
     import requests
-
     if request.method == 'POST':
         form = AcaoForm(request.POST or None)
+        if form.is_valid():
+            try:
+                simbolo = form.cleaned_data['simbolo'] + ".sa"
+                #print(simbolo)
+                api_request = yf.Ticker(simbolo)
+            except Exception as e:
+                api_request = 500
 
-        try:
-            api_request = yf.Ticker(simbolo)
-        except Exception as e:
-            api_request = 500
-
-        if (form.is_valid()) and (api_request != 500):
-            form.save()
-            messages.success(request, ("Adicionado com Sucesso!"))
-            return redirect('portifolio')
+            if (api_request != 500):
+                acao = form.save(commit=False)
+                acao.simbolo = simbolo
+                acao.save()
+                messages.success(request, ("Adicionado com Sucesso!"))
+                atualizar(request)
+                return redirect('portifolio')
+            else:
+                messages.error(request, ("Ação não encontrada."))
+                return redirect('portifolio')
         else:
-            messages.error(request, ("Ação não encontrada."))
-            return redirect('portifolio')
+                messages.error(request, ("Ação não encontrada."))
+                return redirect('portifolio')
     else:    
         acoes = Salvo.objects.all()
         listAcoes = []
@@ -74,8 +79,10 @@ def portifolio(request):
         return render(request, 'portifolio.html', {'lista':listAcoes})
 
 def delete(request, acao_id):
-    item = Acao.objects.get(pk=acao_id)
-    item.delete()
+    itemA = Acao.objects.get(pk=acao_id)
+    itemS = Salvo.objects.get(pk=acao_id)
+    itemA.delete()
+    itemS.delete()
     messages.success(request, ("Deletado com Sucesso!"))
     return redirect('portifolio')
 
@@ -123,35 +130,45 @@ def acao(request, acao_id):
 
 def perfil(request):
     if request.method == 'POST':
-        form = EmailForm(request.POST or None)
-        if (form.is_valid()):
-            form.save()
-            messages.success(request, ("Adicionado com Sucesso!"))
-            return redirect('perfil')
-        else:
-            messages.error(request, ("Houve um erro ao adicionar o email. O email ja esta adicionado?"))
-            return redirect('perfil')
+        if "email" in request.POST:
+            form = EmailForm(request.POST or None)
+            if (form.is_valid()):
+                form.save()
+                messages.success(request, ("Adicionado com Sucesso!"))
+                return redirect('perfil')
+            else:
+                messages.error(request, ("Houve um erro ao adicionar o email. O email ja esta adicionado?"))
+                return redirect('perfil')
+        if "limInf" in request.POST:
+            form = LimiteForm(request.POST or None)
+            if (form.is_valid()):
+                p = Perfil.objects.all()
+                for item in p:
+                    lim = form.save(commit=False)
+                    setattr(item, "limInf", lim.limInf)
+                    setattr(item, "limSup", lim.limSup)
+                    item.save()
+                messages.success(request, ("Limites adicionados com Sucesso!"))
+                return redirect('perfil')
+            else:
+                messages.error(request, ("Houve um erro ao adicionar os limites."))
+                return redirect('perfil')                
     else:
-        e = Email.objects.all()
+        e = Perfil.objects.all()
         email = []
+        limites = {}
         for item in e:
             email.append(getattr(item, "email"))
-        return render(request, 'perfil.html', {"lista":email})
-
-
-@background(schedule=5)
-def get_precos():
-    acoes = Acao.objects.all()
-    for acao in acoes:
-        try:
-            print(str(acao))
-            preco = get_quote_table(str(acao))
-            #print(api_request.info["regularMarketPrice"])
-            p = acao.preco_set.create(preco = preco["Quote Price"])
-            p.save()
-        except Exception as e:
-            #print("Error")
-            pass
+            limites["limInf"] = getattr(item, "limInf")
+            limites["limSup"] = getattr(item, "limSup")
+        task = TaskTime.objects.all()
+        if task:
+            for item in task:
+                taskDict = {}
+                taskDict['numero'] = getattr(item, "numero")
+                taskDict['tempo'] = getattr(item, "tempo")
+            return render(request, 'perfil.html', {"lista":email, "task":taskDict, "limite":limites})
+        return render(request, 'perfil.html', {"lista":email, "task":False, "limite":limites})
 
 def start_get_precos(request):
     if request.method == 'POST':
@@ -159,12 +176,15 @@ def start_get_precos(request):
         if (form.is_valid()):
             numero = form.cleaned_data['numero']
             tempo = form.cleaned_data['tempo']
+            task = TaskTime()
+            task.numero = numero
             if tempo == 1:
                 try:
                     CompletedTask.objects.all().delete()
                     Task.objects.all().delete()
                     get_precos(repeat= (numero))
-                    os.system('python manage.py process_tasks')
+                    task.tempo = "segundo(s)"
+                    task.save()
                     return redirect('perfil')
                 except Exception as e:
                     return redirect('perfil')
@@ -173,7 +193,8 @@ def start_get_precos(request):
                     CompletedTask.objects.all().delete()
                     Task.objects.all().delete()
                     get_precos(repeat= (numero*60))
-                    os.system('python manage.py process_tasks')
+                    task.tempo = "minuto(s)"
+                    task.save()
                     return redirect('perfil')
                 except Exception as e:
                     return redirect('perfil')
@@ -182,12 +203,20 @@ def start_get_precos(request):
                     CompletedTask.objects.all().delete()
                     Task.objects.all().delete()
                     get_precos(repeat= (numero*60*60))
-                    os.system('python manage.py process_tasks')
+                    task.tempo = "hora(s)"
+                    task.save()
                     return redirect('perfil')
                 except Exception as e:
                     return redirect('perfil')
+            task.save()
+
         else:
             messages.error(request, ("Houve um erro ao iniciar o Script"))
             return redirect('perfil')
     else:
         return redirect('perfil')
+
+def stop_get_precos(request):
+    Task.objects.all().delete()
+    TaskTime.objects.all().delete()
+    return redirect('perfil')

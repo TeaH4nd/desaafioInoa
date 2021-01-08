@@ -1,5 +1,5 @@
 from django import forms
-from .models import Acao, Email
+from .models import Acao, Perfil
 
 class AcaoForm(forms.ModelForm):
     class Meta:
@@ -8,8 +8,13 @@ class AcaoForm(forms.ModelForm):
 
 class EmailForm(forms.ModelForm):
     class Meta:
-        model = Email
+        model = Perfil
         fields = ["email"]
+
+class LimiteForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ["limSup", "limInf"]
 
 class TempoForm(forms.Form):
     numero = forms.FloatField(min_value = 0)

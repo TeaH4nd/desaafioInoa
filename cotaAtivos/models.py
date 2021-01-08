@@ -22,5 +22,11 @@ class Salvo(models.Model):
     capMerc = models.FloatField()
     data = models.DateTimeField(auto_now_add=True)
 
-class Email(models.Model):
+class Perfil(models.Model):
     email = models.CharField(max_length=100, unique=True)
+    limSup = models.FloatField(blank=True, null=True)
+    limInf = models.FloatField(blank=True, null=True)
+
+class TaskTime(models.Model):
+    numero = models.FloatField()
+    tempo = models.CharField(max_length=10)

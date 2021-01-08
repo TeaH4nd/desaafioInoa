@@ -16,7 +16,7 @@
         
 		<tr>
 			<td scope="row">{{ item.preco|floatformat:"2"|intcomma }}</td>
-			<td>{{ item.data }}</td>
+			<td>{{ item.data|date }} às {{ item.data|time:"H:i:s" }}</td>
 		</tr>
 
 		{% endfor %}

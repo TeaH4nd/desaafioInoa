@@ -9,6 +9,7 @@ urlpatterns = [
     path('atualizar', views.atualizar, name="atualizar"),
     path('preco/<acao_id>', views.acao  , name="acao"),
     path('start', views.start_get_precos  , name="start"),
+    path('stop', views.stop_get_precos  , name="stop"),
     path('perfil.html', views.perfil  , name="perfil"),
 
 ]
