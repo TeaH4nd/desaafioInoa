@@ -255,3 +255,4 @@ def email(request):
         mail_to = str(getattr(email, "email"))
         send_mail('assunto', 'msg', EMAIL_HOST_USER, [mail_to], fail_silently=False)
         print("enviado email")
+    return redirect('portifolio')

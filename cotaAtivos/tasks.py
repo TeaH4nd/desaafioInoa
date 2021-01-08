@@ -32,11 +32,10 @@ def get_precos():
 def manda_email(limite, nome, valor, preco):
     e = Email.objects.all()
     for email in e:
-        print("mandando email")
         mail_to = getattr(email, "email")
         if limite == "sup":
-            assunto = 'Venda a sua acao ' + nome
-            msg = 'Sua ação ' + nome + ' ultrapassou o limite estabelecido de venda de: ' + valor + '. No momento desse email ela vale: ' + preco
+            assunto = 'Venda a sua acao [{}]'.format(nome.upper())
+            msg = 'Sua ação {} ultrapassou o limite estabelecido de venda de: {:.2f}. No momento desse email ela vale: {:.2f}'.format(nome.upper(), valor, preco)
             send_mail(
             assunto,
             msg,
@@ -44,11 +43,11 @@ def manda_email(limite, nome, valor, preco):
             [mail_to],
             fail_silently=False
             )
-            print("mandei email sup")
+            print("mandei email superior")
 
         if limite == "inf":
-            assunto = 'Compre acao ' + nome
-            msg = 'A acao ' + nome + 'ultrapassou o limite estabelecido de compra de: ' + valor + '. No momento desse email ela vale: ' + preco
+            assunto = 'Compre acao [{}]'.format(nome.upper())
+            msg = 'A ação {} ultrapassou o limite estabelecido de compra de: {:.2f}. No momento desse email ela vale: {:.2f}'.format(nome.upper(), valor, preco)
             send_mail(
             assunto,
             msg,
@@ -56,4 +55,4 @@ def manda_email(limite, nome, valor, preco):
             [mail_to],
             fail_silently=False
             )
-            print("mandei email sup")
+            print("mandei email inferior")
