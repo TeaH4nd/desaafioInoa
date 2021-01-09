@@ -246,13 +246,3 @@ def stop_get_precos(request):
     Task.objects.all().delete()
     TaskTime.objects.all().delete()
     return redirect('perfil')
-
-
-def email(request):
-    e = Email.objects.all()
-    for email in e:
-        print("mandando email")
-        mail_to = str(getattr(email, "email"))
-        send_mail('assunto', 'msg', EMAIL_HOST_USER, [mail_to], fail_silently=False)
-        print("enviado email")
-    return redirect('portifolio')
