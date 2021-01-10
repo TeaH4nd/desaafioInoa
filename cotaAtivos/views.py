@@ -12,6 +12,7 @@ from background_task.models import CompletedTask, Task
 from django.core.mail import send_mail
 from desafioInoa.settings import EMAIL_HOST_USER
 
+import datetime, time
 
 def index(request):
     return render(request, 'index.html', {})
@@ -88,6 +89,13 @@ def delete(request, acao_id):
     itemS.delete()
     messages.success(request, ("Deletado com Sucesso!"))
     return redirect('portifolio')
+
+def deleteEmail(request, email_id):
+    email = Email.objects.get(pk=email_id)
+    email.delete()
+    messages.success(request, ("Deletado com Sucesso!"))
+    return redirect('perfil')
+
 
 def atualizar(request):
     simbolo = Acao.objects.all()
@@ -177,9 +185,12 @@ def perfil(request):
     else:
         p = Perfil.objects.all()
         e = Email.objects.all()
-        email = []
+        emailList = []
         for item in e:
-            email.append(getattr(item, "email"))
+            email = {}
+            email["id"] = getattr(item, "id")
+            email["email"] = getattr(item, "email")
+            emailList.append(email)
         limites = []
         for item in p:
             limite = {}
@@ -193,8 +204,8 @@ def perfil(request):
                 taskDict = {}
                 taskDict['numero'] = getattr(item, "numero")
                 taskDict['tempo'] = getattr(item, "tempo")
-            return render(request, 'perfil.html', {"lista":email, "task":taskDict, "limite":limites})
-        return render(request, 'perfil.html', {"lista":email, "task":False, "limite":limites})
+            return render(request, 'perfil.html', {"lista":emailList, "task":taskDict, "limite":limites})
+        return render(request, 'perfil.html', {"lista":emailList, "task":False, "limite":limites})
 
 def start_get_precos(request):
     if request.method == 'POST':

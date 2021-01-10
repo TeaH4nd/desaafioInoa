@@ -1,0 +1,17 @@
+body{
+    font-family: 'Roboto', sans-serif !important;
+}
+
+h1, a, button{
+    font-family: 'Montserrat', sans-serif;
+}
+
+p{
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+}
+
+.email{
+    color:#006ee0;
+    font-size: 15px;
+}

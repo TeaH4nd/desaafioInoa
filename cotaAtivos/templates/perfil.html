@@ -2,137 +2,143 @@
 
 <h1>Perfil</h1>
 <br />
-<h5>Email</h5>
-<div class="row align-items-start">
-	<div class="col-4">
-		<form
-			action="{% url 'perfil' %}"
-			class="row row-cols-lg-auto g-3 align-items-center"
-			method="POST"
-		>
-			{% csrf_token %}
-			<div class="col-12">
-				<div class="input-group">
-					<input
-						class="form-control mr-sm-2"
-						type="search"
-						placeholder="Digite seu Email"
-						aria-label="Search"
-						name="email"
-					/>
+<div class="flex-container">
+	<div class="row align-items-start justify-content-center">
+		<div class="col-4 flex">
+			<h5>Email</h5>
+			<form
+				action="{% url 'perfil' %}"
+				class="row row-cols-lg-auto g-3 align-items-center"
+				method="POST"
+			>
+				{% csrf_token %}
+				<div class="col-12">
+					<div class="input-group">
+						<input
+							class="form-control mr-sm-2"
+							type="search"
+							placeholder="Digite seu Email"
+							aria-label="Search"
+							name="email"
+						/>
+					</div>
 				</div>
-			</div>
-			<div class="col-12">
-				<button class="btn btn-outline-success" type="submit">
-					Adicionar
-				</button>
-			</div>
-		</form>
-	</div>
-	<div class="col-4">
-		<table class="table table-striped table-bordered table-hover">
-			<thead class="table-dark">
-				<tr>
-					<th scope="col">Email</th>
-				</tr>
-			</thead>
-			<tbody>
-                {% if lista %}
-				{% load humanize %} {% for item in lista %}
-				<tr>
-					<td scope="row">{{ item }}</td>
-				</tr>
-
-				{% endfor %}
-                {% else %}
-
-				<tr>
-					<td scope="row">Nenhum email cadastrado</td>
-				</tr>
-
-				{% endif %}
-			</tbody>
-		</table>
-	</div>
-</div>
-<br/>
-<h5>Limites</h5>
-
-<div class="row align-items-center">
-	<div class="col-4">
-		<table class="table table-striped table-bordered table-hover">
-			<thead class="table-dark">
-				<tr>
-					<th scope="col">Simbolo</th>
-                    <th scope="col">Limite Inferior</th>
-                    <th scope="col">Limite Superior</th>
-				</tr>
-			</thead>
-			<tbody>
-                {% if limite %}
-				{% load humanize %}
-				{% for item in limite %} 
-                <tr>
-                    <td scope="row">{{item.simbolo}}</td>
-                    <td scope="row">{{item.limInf}}</td>
-                    <td scope="row">{{item.limSup}}</td>
-                </tr>
-				{% endfor %}
-                {% else %}
-				<tr>
-					<td scope="row">LimInf</td>
-					<td scope="row">LimSup</td>
-				</tr>
-                {% endif %}
-			</tbody>
-		</table>
-	</div>
-</div>
-<br/>
-<h5>Script</h5>
-
-<div class="row align-items-center">
-	<div class="col-12">
-		<form
-			action="{% url 'start' %}"
-			class="row row-cols-lg-auto g-3 align-items-center"
-			method="POST"
-		>
-			{% csrf_token %}
-			<div class="col-3">
-				<div class="input-group">
-					<input
-						class="form-control mr-sm-4"
-						type="search"
-						placeholder="Digite o periodo de repetição"
-						aria-label="Search"
-						name="numero"
-					/>
+				<div class="col-12">
+					<button class="btn btn-outline-success" type="submit">
+						Adicionar
+					</button>
 				</div>
-			</div>
-			<div class="col-3">
-				<select class="form-select" id="inlineFormSelectPref" name="tempo">
-					<option selected value="1">Segundo(s)</option>
-					<option value="2">Minuto(s)</option>
-					<option value="3">Hora(s)</option>
-				</select>
-			</div>
-			<div class="col-3">
-				<button class="btn btn-outline-success" type="submit">
-					Adicionar
-				</button>
-            </div>
-            <div class="col-3">
-            <a href="{% url 'stop' %}" type="button" class="btn btn-danger"
-	        >Parar</a>
-            </div>
-        </form>
-        <br/>
-        {% if task %}
-            <p class="h5">Suas ações estao sendo salvas a cada {{ task.numero }} {{ task.tempo }}</p>
-        {% else %}
-            <p class="h5">Não estou atualizando o preço das ações</p>
-        {% endif %}
+			</form>
+		</div>
+		<div class="col-2 flex justify-content-bottom">
+			<table class="table table-sm table-borderless">
+				<tbody>
+					{% if lista %} {% load humanize %} {% for item in lista %}
+					<tr>
+						<td class="email align-text-bottom" scope="row">{{ item.email }}</td>
+						<td class="" scope="row">				
+							<a
+							href="{% url 'deleteEmail' item.id %}"
+							type="button"
+							class="btn-outline-danger btn-sm"
+							><i class="far fa-trash-alt fa-sm"></i></a
+						></td>
+					</tr>
+
+					{% endfor %} {% else %}
+
+					<tr>
+						<td scope="row">Nenhum email cadastrado</td>
+					</tr>
+
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<br />
+
+	<div class="row align-items-center justify-content-center">
+		<div class="col-4">
+			<h5>Limites</h5>
+			<table class="table table-striped table-bordered table-hover">
+				<thead class="table-dark">
+					<tr>
+						<th scope="col">Simbolo</th>
+						<th scope="col">Limite p/ compra</th>
+						<th scope="col">Limite p/ venda</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if limite %} {% load humanize %} {% for item in limite %}
+					<tr>
+						<td scope="row">{{item.simbolo}}</td>
+						<td scope="row">{{item.limInf}}</td>
+						<td scope="row">{{item.limSup}}</td>
+					</tr>
+					{% endfor %} {% else %}
+					<tr>
+						<td scope="row">LimInf</td>
+						<td scope="row">LimSup</td>
+					</tr>
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-4">
+			<h5>Script</h5>
+			<form
+				action="{% url 'start' %}"
+				class="row row-cols-lg-auto g-3 align-items-center"
+				method="POST"
+			>
+				{% csrf_token %}
+				<div class="col-3">
+					<div class="input-group">
+						<input
+							class="form-control mr-sm-4"
+							type="search"
+							placeholder="Digite o tempo"
+							aria-label="Search"
+							name="numero"
+						/>
+					</div>
+				</div>
+				<div class="col-3">
+					<select
+						class="form-select"
+						id="inlineFormSelectPref"
+						name="tempo"
+					>
+						<option selected value="1">Segundo(s)</option>
+						<option value="2">Minuto(s)</option>
+						<option value="3">Hora(s)</option>
+					</select>
+				</div>
+				<div class="col-3">
+					<button class="btn btn-outline-success" type="submit">
+						Adicionar
+					</button>
+				</div>
+				<div class="col-3">
+					<a
+						href="{% url 'stop' %}"
+						type="button"
+						class="btn btn-danger"
+						>Parar</a
+					>
+				</div>
+			</form>
+			<br />
+			{% if task %}
+			<p class="h5">
+				Suas ações estao sendo salvas a cada {{ task.numero }} {{ task.tempo }}
+			</p>
+			{% else %}
+			<p class="h5">Não estou atualizando o preço das ações</p>
+			{% endif %}
+		</div>
 	</div>
 </div>
 {% endblock %}

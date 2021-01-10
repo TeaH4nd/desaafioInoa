@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1>Portifolio</h1>
+<h1>Portifólio</h1>
 <div class="row align-items-start">
 	<div class="col-4">
 		<form
@@ -61,7 +61,11 @@
 			<td>R$ {{ item.dayLow }}</td>
 			<td>R$ {{ item.previousClose }}</td>
 			<td>R$ {{ item.marketCap|intword }}</td>
+			{% if "dia" in item.data|naturaltime %}
+				<td>{{ item.data|naturalday }}</td>
+			{% else %}
 			<td>{{ item.data|naturaltime }}</td>
+			{% endif %}
 			<td>
 				<a
 					href="{% url 'acao' item.id %}"
@@ -76,8 +80,5 @@
 	</tbody>
 </table>
 
-<a href="{% url 'atualizar' %}" type="button" class="btn btn-success"
-	>Atualizar</a
->
 
 {% endblock %}

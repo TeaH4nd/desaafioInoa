@@ -12,65 +12,88 @@
 			integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
 			crossorigin="anonymous"
 		/>
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css"
+		/>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+		<script
+			type="text/javascript"
+			charset="utf8"
+			src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"
+		></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
 
+		{% load static %}
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="{% static 'cotaAtivos/main.css' %}"
+		/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Roboto&display=swap"
+			rel="stylesheet"
+		/>
 
 		<title>Portifolio de Ações</title>
 	</head>
 	<body>
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="{% url 'index' %}">Index</a>
-				<button
-					class="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarSupportedContent"
-					aria-controls="navbarSupportedContent"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
-				>
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div
-					class="collapse navbar-collapse"
-					id="navbarSupportedContent"
-				>
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'portifolio' %}"
-								>Portifolio</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'perfil' %}"
-								>Perfil</a
-							>
-						</li>
-					</ul>
-					<form
-						action="{% url 'home' %}"
-						class="d-flex"
-						method="POST"
+		<div class="row mx-auto">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+				<div class="container-fluid" style="width: 700px">
+					<a class="navbar-brand" href="{% url 'portifolio' %}"
+						>Portifólio</a
 					>
-						{% csrf_token %}
-						<input
-							class="form-control me-2"
-							type="search"
-							placeholder="Digite uma ação"
-							aria-label="Search"
-							name="simbolo"
-						/>
-						<button class="btn btn-outline-success" type="submit">
-							Pesquisar
-						</button>
-					</form>
+					<button
+						class="navbar-toggler"
+						type="button"
+						data-bs-toggle="collapse"
+						data-bs-target="#navbarSupportedContent"
+						aria-controls="navbarSupportedContent"
+						aria-expanded="false"
+						aria-label="Toggle navigation"
+					>
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div
+						class="collapse navbar-collapse mx-auto gap-3"
+						id="navbarSupportedContent"
+					>
+						<ul class="navbar-nav mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'perfil' %}"
+									>Perfil</a
+								>
+							</li>
+						</ul>
+						<form
+							action="{% url 'home' %}"
+							class="d-flex"
+							method="POST"
+						>
+							{% csrf_token %}
+							<input
+								class="form-control me-2"
+								type="search"
+								placeholder="Digite uma ação"
+								aria-label="Search"
+								name="simbolo"
+							/>
+							<button
+								class="btn btn-outline-success"
+								type="submit"
+							>
+								Pesquisar
+							</button>
+						</form>
+					</div>
 				</div>
-			</div>
-		</nav>
-		<div class="container">
+			</nav>
+		</div>
+		<div class="container justify-content-center mx-auto">
 			<br />
 			{% if messages %} {% for message in messages %}
 			<div
@@ -97,19 +120,31 @@
 			crossorigin="anonymous"
 		></script>
 		<script>
-			$(document).ready(function(){
-				$('#myTable').dataTable({
-        		/* Disable initial sort */
-				"aaSorting": [],
-				"pagingType": "full_numbers",
-				searching: false,
-    				});
+			$(document).ready(function () {
+				$("#myTable").dataTable({
+					/* Disable initial sort */
+					aaSorting: [],
+					pagingType: "full_numbers",
+					searching: false,
+					language: {
+						"lengthMenu": "Mostrar _MENU_ itens por pág.",
+						"zeroRecords": "Nenhuma ação registrada!",
+						"info": "Mostrando pág _PAGE_ de _PAGES_",
+						"infoEmpty": "No records available",
+						"paginate": {
+							"first":      "Primeiro",
+							"last":       "Último",
+							"next":       "Próx.",
+							"previous":   "Ant."
+						},
+					}
 				});
-			</script>
+			});
+		</script>
 		<!-- Option 2: Separate Popper and Bootstrap JS -->
 		<!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-	--></body>
-
+	-->
+	</body>
 </html>
