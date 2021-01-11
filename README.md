@@ -36,10 +36,10 @@ Crie um arquivo _.env_
 $ touch .env
 ```
 Adicione seus credenciais para mandar email
->EMAIL_HOST = 'smtp.gmail.com' 
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'SEU_EMAIL'
+>EMAIL_HOST = 'smtp.gmail.com' \n
+EMAIL_USE_TLS = True \n
+EMAIL_PORT = 587 \n
+EMAIL_HOST_USER = 'SEU_EMAIL' \n
 EMAIL_HOST_PASSWORD = 'SUA_SENHA'
 
 Depois de configurado inicie o servidor
