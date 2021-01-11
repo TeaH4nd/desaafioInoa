@@ -7,7 +7,15 @@ import yfinance as yf
 from yahoo_fin.stock_info import get_quote_table
 from background_task import background
 
-
+#script para atualização de preços dado um certo periodo de tempo
+#   para cada ação no modelo Acao ele procura o simbolo da ação
+#   na api da yfinance e salva o preço e a data e hora que foi
+#   obtido
+###
+#a tag @background é um wrapper da background_task para rodar
+#   o script em paralelo com o site
+#  Para fazer o script rodar deve-se iniciar o processo pelo manage.py
+#   'manage.py process_tasks'
 @background(schedule=5)
 def get_precos():
     acoes = Acao.objects.all()
@@ -39,7 +47,12 @@ def get_precos():
             pass
     atualizar()
 
-
+#função para mandar email para todos os emails do modelo Email caso o preço
+#   da ação ultrapasse os limites de compra ou de venda
+## limite => [string] utilizado para definir se é o limite de compra ou de venda
+## nome => [string] simbolo da ação
+## valor => [float] valor do limite
+## preco => [float] valor da ação no momento atual
 def manda_email(limite, nome, valor, preco):
     e = Email.objects.all()
     for email in e:
@@ -68,6 +81,8 @@ def manda_email(limite, nome, valor, preco):
             )
             print("mandei email inferior")
 
+
+#função para atualizar os dados salvos no modelo Salvo para visualização
 def atualizar():
     simbolo = Acao.objects.all()
     acoes = []

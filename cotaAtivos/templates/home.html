@@ -3,8 +3,8 @@
 
 <br />
 <br />
-{% if api %} 
-    {% if api == 200 %} Something went wrong with the api querry 
+{% if error %} 
+    <h4>{{ error }}</h4> 
     {%else %}
         <div class="row justify-content-center">
             <div class="col-sm-12">
@@ -14,16 +14,16 @@
                 />
             </div>
             <div class="col-sm-12 col align-self-center">
+                {% load humanize %}
                 <h1>{{ api.longName }}</h1>
                 <p>({{ api.symbol }})</p>
                 Preço: R$ {{ api.regularMarketPrice }}<br />
                 Alta: R$ {{ api.dayHigh }}<br />
                 Baixa: R$ {{ api.dayLow }}<br />
                 Fech. ant.: R$ {{ api.previousClose }}<br />
-                Cap. merc.: R$ {{ api.marketCap }}<br />
+                Cap. merc.: R$ {{ api.marketCap|intword }}<br />
             </div>
         </div>
-    {% endif %} 
 {% endif %} 
 
 {% endblock %}

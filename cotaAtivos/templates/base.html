@@ -97,7 +97,7 @@
 			<br />
 			{% if messages %} {% for message in messages %}
 			<div
-				class="alert alert-warning alert-dismissible fade show"
+				class="col-3 alert alert-{{ message.tags }} alert-dismissible fade show"
 				role="alert"
 			>
 				<button
