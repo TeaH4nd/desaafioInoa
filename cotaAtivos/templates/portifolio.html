@@ -61,10 +61,11 @@
 			<td>R$ {{ item.dayLow }}</td>
 			<td>R$ {{ item.previousClose }}</td>
 			<td>R$ {{ item.marketCap|intword }}</td>
-			{% if "dia" in item.data|naturaltime %}
+			{% load filter %}
+			{% if "dia" in item.data|naturalday %}
 				<td>{{ item.data|naturalday }}</td>
 			{% else %}
-			<td>{{ item.data|naturaltime }}</td>
+			<td>há {{ item.data|timesince|upto:','}}</td>
 			{% endif %}
 			<td>
 				<a
