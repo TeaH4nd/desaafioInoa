@@ -16,6 +16,8 @@ class LimiteForm(forms.ModelForm):
         model = Perfil
         fields = ["limSup", "limInf"]
 
+    
+
 class TempoForm(forms.Form):
     numero = forms.FloatField(min_value = 0)
     tempo = forms.IntegerField()

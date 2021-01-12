@@ -27,7 +27,7 @@ def home(request):
 
         #apiList = list(api['results'].values())
     else:
-        return render(request, 'home.html', {'error':"Digite um simbolo acima para pesquisa"})
+        return render(request, 'home.html', {'error':"Digite um simbolo acima para pesquisar"})
 
 # view para renderizar a tabela com as info de todas as ações adicionadas pelo usuario
 #   nela tem o form de adicionar novas ações no modelo Acao para futuras consultas
@@ -99,9 +99,13 @@ def deleteEmail(request, email_id):
 #   nela tem o form de criar ou atualizar os limites da ação
 def acao(request, acao_id):
     if request.method == 'POST':
-        form = LimiteForm(request.POST or None)
+        req = request.POST.copy()
+        req["limSup"] = request.POST["limSup"].replace(",",".")
+        req["limInf"] = request.POST["limInf"].replace(",",".")
+        form = LimiteForm(req or None)
         #print(form)
         if (form.is_valid()):
+            print("form is valid")
             try:
                 p = Perfil.objects.get(pk=acao_id)
                 print(p)
@@ -167,7 +171,7 @@ def perfil(request):
         limites = []
         for item in p:
             limite = {}
-            limite["simbolo"] = getattr(item, "simbolo")
+            limite["simbolo"] = str(getattr(item, "simbolo")).upper()[:-3]
             limite["limInf"] = getattr(item, "limInf")
             limite["limSup"] = getattr(item, "limSup")
             limites.append(limite)
